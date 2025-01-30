@@ -3,271 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>X Premium Clone</title>
+    <title>X Clone</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Estilos anteriores mantidos... */
-        
-        /* Novos estilos adicionados */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background-color: var(--background-color);
-            width: 400px;
-            border-radius: 15px;
-            padding: 20px;
-            position: relative;
-            margin: 100px auto;
-        }
-
-        .profile-page {
-            display: none;
-        }
-
-        .profile-header {
-            height: 200px;
-            background-color: var(--primary-color);
-            position: relative;
-        }
-
-        .profile-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 4px solid var(--background-color);
-            position: absolute;
-            bottom: -60px;
-            left: 20px;
-        }
-
-        .profile-info {
-            margin-top: 70px;
-            padding: 20px;
-        }
-
-        .follow-button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-
-        .tab-bar {
-            display: flex;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .tab-item {
-            flex: 1;
-            text-align: center;
-            padding: 15px;
-            cursor: pointer;
-        }
-
-        .tab-item.active {
-            border-bottom: 2px solid var(--primary-color);
-        }
-
-        .message-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 350px;
-            background-color: var(--background-color);
-            border-radius: 15px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .message-header {
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .message-list {
-            height: 400px;
-            overflow-y: auto;
-        }
-
-        .message-input {
-            padding: 15px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: red;
-            color: white;
-            border-radius: 50%;
-            padding: 2px 6px;
-            font-size: 12px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Todos os elementos anteriores mantidos... -->
+    <!-- Sidebar Esquerda -->
+    <div class="left-sidebar">
+        <div class="logo"><i class="fab fa-twitter"></i></div>
+        <div class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Página Inicial</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-hashtag"></i>
+            <span>Explorar</span>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-bell"></i>
+            <span>Notificações</span>
+            <span class="notification-badge">0</span>
+        </div>
+        <button class="tweet-button"><i class="fas fa-feather"></i><span class="full-text">Tweetar</span></button>
+        <div class="theme-toggle" onclick="toggleTheme()">
+            <i class="fas fa-moon"></i>
+            <span class="full-text">Tema Escuro</span>
+        </div>
+    </div>
 
-    <!-- Novo Modal de Login -->
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <div class="header">
+            <h2>Página Inicial</h2>
+            <i class="fas fa-star"></i>
+        </div>
+        
+        <div class="tweet-compose">
+            <div class="avatar"></div>
+            <div class="tweet-input-container">
+                <textarea class="tweet-input" placeholder="O que está acontecendo?" maxlength="280"></textarea>
+                <div class="tweet-actions">
+                    <div class="tweet-icons">
+                        <i class="fas fa-image"></i>
+                        <i class="fas fa-film"></i>
+                        <i class="far fa-smile"></i>
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="char-counter"><span id="char-count">0</span>/280</div>
+                    <button class="tweet-button" onclick="postTweet()" style="width: auto">Tweetar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tweet-feed" id="tweet-feed"></div>
+    </div>
+
+    <!-- Sidebar Direita -->
+    <div class="right-sidebar">
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" class="search-input" placeholder="Pesquisar no X">
+        </div>
+        <div class="trends">
+            <h3>O que está acontecendo</h3>
+            <div class="trend-item">
+                <div>Assuntos do momento</div>
+                <div>#NovoLayout</div>
+                <div>2.456 Tweets</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Login -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <h2>Entrar no X</h2>
-            <input type="text" placeholder="E-mail ou nome de usuário">
-            <input type="password" placeholder="Senha">
+            <input type="text" id="loginInput" placeholder="E-mail ou usuário">
+            <input type="password" id="loginPassword" placeholder="Senha">
             <button onclick="login()">Entrar</button>
             <button onclick="showRegister()">Criar conta</button>
         </div>
     </div>
 
-    <!-- Página de Perfil -->
-    <div class="profile-page">
-        <div class="profile-header"></div>
-        <img src="avatar.jpg" class="profile-avatar">
-        <div class="profile-info">
-            <h2>John Doe</h2>
-            <button class="follow-button">Seguir</button>
-            <div class="tab-bar">
-                <div class="tab-item active">Tweets</div>
-                <div class="tab-item">Respostas</div>
-                <div class="tab-item">Mídia</div>
-                <div class="tab-item">Curtidas</div>
-            </div>
-            <!-- Conteúdo do perfil -->
-        </div>
-    </div>
-
-    <!-- Janela de Mensagens -->
-    <div class="message-container">
-        <div class="message-header">
-            <h3>Mensagens</h3>
-        </div>
-        <div class="message-list" id="messageList"></div>
-        <div class="message-input">
-            <input type="text" placeholder="Escreva uma mensagem...">
-            <button><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-
-    <script>
-        // Banco de dados local
-        let db = {
-            users: [],
-            tweets: [],
-            messages: [],
-            notifications: [],
-            currentUser: null
-        };
-
-        // Sistema de Autenticação
-        function showLogin() {
-            document.getElementById('loginModal').style.display = 'block';
-        }
-
-        function login() {
-            // Lógica de login
-            db.currentUser = { id: 1, name: "John Doe", handle: "@johndoe" };
-            initApp();
-        }
-
-        // Sistema de Notificações em Tem Real
-        function pushNotification(text) {
-            const notification = {
-                id: Date.now(),
-                text: text,
-                read: false,
-                timestamp: new Date()
-            };
-            db.notifications.push(notification);
-            updateNotificationBadge();
-        }
-
-        // Sistema de Mensagens Diretas
-        function sendMessage(content) {
-            const message = {
-                id: Date.now(),
-                sender: db.currentUser.id,
-                content: content,
-                timestamp: new Date()
-            };
-            db.messages.push(message);
-            renderMessages();
-        }
-
-        // Sistema de Seguidores
-        function followUser(userId) {
-            if (!db.currentUser.following) db.currentUser.following = [];
-            db.currentUser.following.push(userId);
-            updateProfile();
-        }
-
-        // Sistema de Hashtags e Menções
-        function parseTweetContent(content) {
-            return content
-                .replace(/#(\w+)/g, '<a href="/tag/$1" class="hashtag">#$1</a>')
-                .replace(/@(\w+)/g, '<a href="/user/$1" class="mention">@$1</a>');
-        }
-
-        // Novas Funcionalidades de Tweets
-        function retweetWithComment(tweetId) {
-            const tweet = db.tweets.find(t => t.id === tweetId);
-            const comment = prompt("Adicione um comentário ao retweetar:");
-            if (comment) {
-                const newTweet = {
-                    ...tweet,
-                    retweetedBy: db.currentUser.id,
-                    comment: comment
-                };
-                db.tweets.unshift(newTweet);
-                renderTweets();
-            }
-        }
-
-        function bookmarkTweet(tweetId) {
-            if (!db.currentUser.bookmarks) db.currentUser.bookmarks = [];
-            const index = db.currentUser.bookmarks.indexOf(tweetId);
-            if (index === -1) {
-                db.currentUser.bookmarks.push(tweetId);
-            } else {
-                db.currentUser.bookmarks.splice(index, 1);
-            }
-        }
-
-        // Sistema de Pesquisa Avançada
-        function search(query) {
-            return db.tweets.filter(tweet => 
-                tweet.content.toLowerCase().includes(query.toLowerCase()) ||
-                tweet.user.toLowerCase().includes(query.toLowerCase())
-            );
-        }
-
-        // Inicialização do App
-        function initApp() {
-            if (db.currentUser) {
-                document.getElementById('loginModal').style.display = 'none';
-                // Carregar conteúdo do usuário
-                renderTweets();
-                renderMessages();
-                updateNotificationBadge();
-            }
-        }
-
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', () => {
-            showLogin();
-            setInterval(checkNotifications, 5000);
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
