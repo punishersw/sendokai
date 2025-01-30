@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-$conn = new mysqli("localhost", "SEU_USUARIO", "SUA_SENHA", "NOME_DB");
+$conn = new mysqli("sql10.freesqldatabase.com", "sql10760382", "KplR3XKQHb", "sql10760382");
 
 // Operações via POST
 $action = $_POST['action'] ?? '';
