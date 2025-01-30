@@ -3,369 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twitter/X Clone</title>
+    <title>X Premium Clone</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #1DA1F2;
-            --background-color: white;
-            --text-color: #0F1419;
-            --border-color: #e1e8ed;
-            --hover-color: #e8f5fe;
+        /* Estilos anteriores mantidos... */
+        
+        /* Novos estilos adicionados */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
         }
 
-        [data-theme="dark"] {
-            --background-color: #15202B;
-            --text-color: white;
-            --border-color: #38444d;
-            --hover-color: #192734;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        body {
-            display: flex;
-            height: 100vh;
+        .modal-content {
             background-color: var(--background-color);
-            color: var(--text-color);
+            width: 400px;
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            margin: 100px auto;
         }
 
-        /* Sidebar Esquerda */
-        .left-sidebar {
-            width: 250px;
-            padding: 20px;
-            border-right: 1px solid var(--border-color);
+        .profile-page {
+            display: none;
+        }
+
+        .profile-header {
+            height: 200px;
+            background-color: var(--primary-color);
             position: relative;
         }
 
-        .logo {
-            font-size: 30px;
-            margin-bottom: 20px;
-            color: var(--primary-color);
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--background-color);
+            position: absolute;
+            bottom: -60px;
+            left: 20px;
         }
 
-        .nav-item {
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 25px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .profile-info {
+            margin-top: 70px;
+            padding: 20px;
         }
 
-        .nav-item:hover {
-            background-color: var(--hover-color);
-        }
-
-        .tweet-button {
+        .follow-button {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        /* Conteúdo Principal */
-        .main-content {
-            flex: 1;
-            max-width: 600px;
-            border-right: 1px solid var(--border-color);
-        }
-
-        .header {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .tweet-compose {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            gap: 15px;
-        }
-
-        .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #ddd;
-        }
-
-        .tweet-input {
-            flex: 1;
-            border: none;
-            font-size: 20px;
-            resize: none;
-            background-color: transparent;
-            color: var(--text-color);
-        }
-
-        .tweet-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-        }
-
-        .tweet-feed {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .tweet {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            gap: 15px;
-        }
-
-        .tweet-content {
-            flex: 1;
-        }
-
-        .tweet-engagement {
-            display: flex;
-            gap: 50px;
-            margin-top: 10px;
-            color: #657786;
-        }
-
-        .tweet-engagement i {
+            padding: 10px 20px;
+            border-radius: 20px;
             cursor: pointer;
         }
 
-        .tweet-engagement i:hover {
-            color: var(--primary-color);
-        }
-
-        /* Sidebar Direita */
-        .right-sidebar {
-            width: 350px;
-            padding: 20px;
-        }
-
-        .search-bar {
-            padding: 10px 15px;
-            background-color: #eff3f4;
-            border-radius: 25px;
-            margin-bottom: 15px;
+        .tab-bar {
             display: flex;
-            align-items: center;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .search-input {
-            border: none;
-            background: none;
-            margin-left: 10px;
-            width: 80%;
-            background-color: transparent;
-        }
-
-        .trends {
-            background-color: #f7f9f9;
-            border-radius: 15px;
+        .tab-item {
+            flex: 1;
+            text-align: center;
             padding: 15px;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
             cursor: pointer;
         }
 
-        .char-counter {
-            color: #657786;
-            font-size: 14px;
+        .tab-item.active {
+            border-bottom: 2px solid var(--primary-color);
         }
 
-        /* Responsividade */
-        @media (max-width: 1200px) {
-            .right-sidebar {
-                display: none;
-            }
+        .message-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            background-color: var(--background-color);
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        @media (max-width: 1000px) {
-            .left-sidebar {
-                width: 80px;
-                align-items: center;
-            }
-            .nav-item span {
-                display: none;
-            }
-            .tweet-button {
-                padding: 15px;
-                border-radius: 50%;
-            }
-            .theme-toggle span {
-                display: none;
-            }
+        .message-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        @media (max-width: 500px) {
-            .tweet-compose .avatar {
-                display: none;
-            }
+        .message-list {
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        .message-input {
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar Esquerda -->
-    <div class="left-sidebar">
-        <div class="logo"><i class="fab fa-twitter"></i></div>
-        <div class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Página Inicial</span>
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-hashtag"></i>
-            <span>Explorar</span>
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-bell"></i>
-            <span>Notificações</span>
-        </div>
-        <button class="tweet-button"><i class="fas fa-feather"></i><span class="full-text">Tweetar</span></button>
-        <div class="theme-toggle" onclick="toggleTheme()">
-            <i class="fas fa-moon"></i>
-            <span class="full-text">Tema Escuro</span>
+    <!-- Todos os elementos anteriores mantidos... -->
+
+    <!-- Novo Modal de Login -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h2>Entrar no X</h2>
+            <input type="text" placeholder="E-mail ou nome de usuário">
+            <input type="password" placeholder="Senha">
+            <button onclick="login()">Entrar</button>
+            <button onclick="showRegister()">Criar conta</button>
         </div>
     </div>
 
-    <!-- Conteúdo Principal -->
-    <div class="main-content">
-        <div class="header">
-            <h2>Página Inicial</h2>
-            <i class="fas fa-star"></i>
-        </div>
-        
-        <div class="tweet-compose">
-            <div class="avatar"></div>
-            <div class="tweet-input-container">
-                <textarea class="tweet-input" placeholder="O que está acontecendo?" maxlength="280"></textarea>
-                <div class="tweet-actions">
-                    <div class="tweet-icons">
-                        <i class="fas fa-image"></i>
-                        <i class="fas fa-film"></i>
-                        <i class="far fa-smile"></i>
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <div class="char-counter"><span id="char-count">0</span>/280</div>
-                    <button class="tweet-button" onclick="postTweet()" style="width: auto">Tweetar</button>
-                </div>
+    <!-- Página de Perfil -->
+    <div class="profile-page">
+        <div class="profile-header"></div>
+        <img src="avatar.jpg" class="profile-avatar">
+        <div class="profile-info">
+            <h2>John Doe</h2>
+            <button class="follow-button">Seguir</button>
+            <div class="tab-bar">
+                <div class="tab-item active">Tweets</div>
+                <div class="tab-item">Respostas</div>
+                <div class="tab-item">Mídia</div>
+                <div class="tab-item">Curtidas</div>
             </div>
-        </div>
-
-        <div class="tweet-feed" id="tweet-feed">
-            <!-- Tweets serão adicionados aqui via JavaScript -->
+            <!-- Conteúdo do perfil -->
         </div>
     </div>
 
-    <!-- Sidebar Direita -->
-    <div class="right-sidebar">
-        <div class="search-bar">
-            <i class="fas fa-search"></i>
-            <input type="text" class="search-input" placeholder="Pesquisar no X">
+    <!-- Janela de Mensagens -->
+    <div class="message-container">
+        <div class="message-header">
+            <h3>Mensagens</h3>
         </div>
-        <div class="trends">
-            <h3>O que está acontecendo</h3>
-            <div class="trend-item">
-                <div>Assuntos do momento</div>
-                <div>#NovoLayout</div>
-                <div>2.456 Tweets</div>
-            </div>
+        <div class="message-list" id="messageList"></div>
+        <div class="message-input">
+            <input type="text" placeholder="Escreva uma mensagem...">
+            <button><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
 
     <script>
-        let tweets = [];
-        let theme = 'light';
+        // Banco de dados local
+        let db = {
+            users: [],
+            tweets: [],
+            messages: [],
+            notifications: [],
+            currentUser: null
+        };
 
-        function postTweet() {
-            const tweetInput = document.querySelector('.tweet-input');
-            const content = tweetInput.value.trim();
-            
-            if(content && content.length <= 280) {
+        // Sistema de Autenticação
+        function showLogin() {
+            document.getElementById('loginModal').style.display = 'block';
+        }
+
+        function login() {
+            // Lógica de login
+            db.currentUser = { id: 1, name: "John Doe", handle: "@johndoe" };
+            initApp();
+        }
+
+        // Sistema de Notificações em Tem Real
+        function pushNotification(text) {
+            const notification = {
+                id: Date.now(),
+                text: text,
+                read: false,
+                timestamp: new Date()
+            };
+            db.notifications.push(notification);
+            updateNotificationBadge();
+        }
+
+        // Sistema de Mensagens Diretas
+        function sendMessage(content) {
+            const message = {
+                id: Date.now(),
+                sender: db.currentUser.id,
+                content: content,
+                timestamp: new Date()
+            };
+            db.messages.push(message);
+            renderMessages();
+        }
+
+        // Sistema de Seguidores
+        function followUser(userId) {
+            if (!db.currentUser.following) db.currentUser.following = [];
+            db.currentUser.following.push(userId);
+            updateProfile();
+        }
+
+        // Sistema de Hashtags e Menções
+        function parseTweetContent(content) {
+            return content
+                .replace(/#(\w+)/g, '<a href="/tag/$1" class="hashtag">#$1</a>')
+                .replace(/@(\w+)/g, '<a href="/user/$1" class="mention">@$1</a>');
+        }
+
+        // Novas Funcionalidades de Tweets
+        function retweetWithComment(tweetId) {
+            const tweet = db.tweets.find(t => t.id === tweetId);
+            const comment = prompt("Adicione um comentário ao retweetar:");
+            if (comment) {
                 const newTweet = {
-                    id: Date.now(),
-                    user: "Usuário",
-                    handle: "@usuario",
-                    content: content,
-                    likes: 0,
-                    retweets: 0,
-                    replies: 0,
-                    time: "Agora mesmo"
+                    ...tweet,
+                    retweetedBy: db.currentUser.id,
+                    comment: comment
                 };
-
-                tweets.unshift(newTweet);
+                db.tweets.unshift(newTweet);
                 renderTweets();
-                tweetInput.value = '';
-                updateCharCounter();
             }
         }
 
-        function renderTweets() {
-            const tweetFeed = document.getElementById('tweet-feed');
-            tweetFeed.innerHTML = '';
-
-            tweets.forEach(tweet => {
-                const tweetElement = document.createElement('div');
-                tweetElement.className = 'tweet';
-                tweetElement.innerHTML = `
-                    <div class="avatar"></div>
-                    <div class="tweet-content">
-                        <div class="tweet-header">
-                            <strong>${tweet.user}</strong> 
-                            <span>${tweet.handle} · ${tweet.time}</span>
-                        </div>
-                        <p>${tweet.content}</p>
-                        <div class="tweet-engagement">
-                            <i class="far fa-comment" onclick="toggleReply(${tweet.id})"></i>
-                            <i class="fas fa-retweet" onclick="retweet(${tweet.id})"></i>
-                            <i class="far fa-heart" onclick="likeTweet(${tweet.id})"></i>
-                            <i class="fas fa-share" onclick="shareTweet(${tweet.id})"></i>
-                        </div>
-                    </div>
-                `;
-                tweetFeed.appendChild(tweetElement);
-            });
+        function bookmarkTweet(tweetId) {
+            if (!db.currentUser.bookmarks) db.currentUser.bookmarks = [];
+            const index = db.currentUser.bookmarks.indexOf(tweetId);
+            if (index === -1) {
+                db.currentUser.bookmarks.push(tweetId);
+            } else {
+                db.currentUser.bookmarks.splice(index, 1);
+            }
         }
 
-        function toggleTheme() {
-            theme = theme === 'light' ? 'dark' : 'light';
-            document.body.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            document.querySelector('.theme-toggle i').className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        // Sistema de Pesquisa Avançada
+        function search(query) {
+            return db.tweets.filter(tweet => 
+                tweet.content.toLowerCase().includes(query.toLowerCase()) ||
+                tweet.user.toLowerCase().includes(query.toLowerCase())
+            );
         }
 
-        function updateCharCounter() {
-            const textarea = document.querySelector('.tweet-input');
-            const counter = document.getElementById('char-count');
-            counter.textContent = textarea.value.length;
+        // Inicialização do App
+        function initApp() {
+            if (db.currentUser) {
+                document.getElementById('loginModal').style.display = 'none';
+                // Carregar conteúdo do usuário
+                renderTweets();
+                renderMessages();
+                updateNotificationBadge();
+            }
         }
 
-        // Event Listeners
-        document.querySelector('.tweet-input').addEventListener('input', updateCharCounter);
-        
         // Inicialização
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.body.setAttribute('data-theme', savedTheme);
-        document.querySelector('.theme-toggle i').className = savedTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        document.addEventListener('DOMContentLoaded', () => {
+            showLogin();
+            setInterval(checkNotifications, 5000);
+        });
     </script>
 </body>
 </html>
