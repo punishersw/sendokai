@@ -7,6 +7,35 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
+
+<!-- Adicione antes do script.js -->
+<script src="realtime.js"></script>
+<script>
+  // Inicialização do sistema
+  document.addEventListener('DOMContentLoaded', () => {
+    RealTime.init();
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        console.log('Notificações ativadas');
+      }
+    });
+
+    // Sistema de Comunidades
+    if (!db.communities) db.communities = [];
+    
+    // Carregar tweets iniciais
+    if (db.tweets.length === 0) {
+      const sampleTweet = TweetSystem.postTweet("Bem-vindo ao X Clone! 🚀");
+      NotificationSystem.sendNotification(db.currentUser.id, 
+        NotificationSystem.createNotification(
+          NotificationSystem.types.MENTION, 
+          { tweetId: sampleTweet.id }
+        )
+      );
+    }
+  });
+</script>
+
 <body>
     <!-- Sidebar Esquerda -->
     <div class="left-sidebar">
