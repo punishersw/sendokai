@@ -1,173 +1,168 @@
-const DB_NAME = 'twitterCloneDB';
-
-// Banco de dados inicial
-const initialDB = {
-    users: [],
-    tweets: [],
-    messages: [],
-    notifications: [],
-    currentUser: null
-};
-
-// Funções de persistência
-function loadDB() {
-    const savedDB = localStorage.getItem(DB_NAME);
-    return savedDB ? JSON.parse(savedDB) : initialDB;
-}
-
-function saveDB() {
-    localStorage.setItem(DB_NAME, JSON.stringify(db));
-}
-
-let db = loadDB();
-
-// Sistema de Autenticação
-function showLogin() {
-    document.getElementById('loginModal').style.display = 'block';
-}
-
-function showRegister() {
-    document.getElementById('loginModal').innerHTML = `
-        <div class="modal-content">
-            <h2>Criar Conta</h2>
-            <input type="text" id="registerName" placeholder="Nome completo">
-            <input type="text" id="registerHandle" placeholder="@username">
-            <input type="email" id="registerEmail" placeholder="E-mail">
-            <input type="password" id="registerPassword" placeholder="Senha">
-            <button onclick="register()">Criar conta</button>
-            <button onclick="showLogin()">Já tenho uma conta</button>
-        </div>
-    `;
-}
-
-function register() {
-    const newUser = {
-        id: Date.now(),
-        name: document.getElementById('registerName').value,
-        handle: document.getElementById('registerHandle').value,
-        email: document.getElementById('registerEmail').value,
-        password: document.getElementById('registerPassword').value,
-        followers: [],
-        following: [],
-        tweets: [],
-        bookmarks: [],
-        createdAt: new Date()
+// Sistema de Tweets Avançado
+const TweetSystem = {
+  postTweet(content, options = {}) {
+    const tweet = {
+      id: Date.now(),
+      userId: db.currentUser.id,
+      content: this.parseContent(content),
+      likes: [],
+      retweets: [],
+      replies: [],
+      timestamp: new Date(),
+      media: options.media || null,
+      poll: options.poll || null,
+      thread: options.thread || null,
+      sensitive: options.sensitive || false
     };
 
-    if (db.users.some(u => u.handle === newUser.handle)) {
-        alert('Username já está em uso!');
-        return;
-    }
-
-    db.users.push(newUser);
-    db.currentUser = newUser;
+    db.tweets.unshift(tweet);
+    this.dispatchTweetEvent(tweet);
     saveDB();
-    initApp();
-}
+    return tweet;
+  },
 
-function login() {
-    const identifier = document.getElementById('loginInput').value;
-    const password = document.getElementById('loginPassword').value;
-
-    const user = db.users.find(u => 
-        (u.email === identifier || u.handle === identifier) && 
-        u.password === password
-    );
-
-    if (user) {
-        db.currentUser = user;
-        saveDB();
-        initApp();
-    } else {
-        alert('Credenciais inválidas!');
-    }
-}
-
-// Sistema de Tweets
-function postTweet() {
-    const tweetInput = document.querySelector('.tweet-input');
-    const content = tweetInput.value.trim();
-    
-    if (content && content.length <= 280) {
-        const newTweet = {
-            id: Date.now(),
-            userId: db.currentUser.id,
-            content: parseTweetContent(content),
-            likes: [],
-            retweets: [],
-            replies: [],
-            timestamp: new Date()
-        };
-
-        db.tweets.unshift(newTweet);
-        db.currentUser.tweets.push(newTweet.id);
-        saveDB();
-        renderTweets();
-        tweetInput.value = '';
-        updateCharCounter();
-    }
-}
-
-function parseTweetContent(content) {
+  parseContent(content) {
     return content
-        .replace(/#(\w+)/g, '<a href="/tag/$1" class="hashtag">#$1</a>')
-        .replace(/@(\w+)/g, '<a href="/user/$1" class="mention">@$1</a>');
-}
+      .replace(/#(\w+)/g, '<a href="/tag/$1" class="hashtag">#$1</a>')
+      .replace(/@(\w+)/g, (match, username) => {
+        const user = db.users.find(u => u.handle === `@${username}`);
+        return user ? `<a href="/${username}" class="mention">@${username}</a>` : match;
+      });
+  },
 
-function renderTweets() {
-    const tweetFeed = document.getElementById('tweet-feed');
-    tweetFeed.innerHTML = db.tweets
-        .map(tweet => {
-            const user = db.users.find(u => u.id === tweet.userId);
-            return `
-                <div class="tweet">
-                    <div class="avatar">${user.handle[0]}</div>
-                    <div class="tweet-content">
-                        <div class="tweet-header">
-                            <strong>${user.name}</strong> 
-                            <span>${user.handle} · ${new Date(tweet.timestamp).toLocaleDateString()}</span>
-                        </div>
-                        <p>${tweet.content}</p>
-                        <div class="tweet-engagement">
-                            <i class="far fa-comment">${tweet.replies.length}</i>
-                            <i class="fas fa-retweet">${tweet.retweets.length}</i>
-                            <i class="far fa-heart">${tweet.likes.length}</i>
-                        </div>
-                    </div>
-                </div>
-            `;
-        })
-        .join('');
-}
+  createPoll(question, options, duration) {
+    return {
+      question,
+      options: options.map(text => ({ text, votes: 0 })),
+      endsAt: new Date(Date.now() + duration * 60000)
+    };
+  },
 
-// Sistema de UI
-function toggleTheme() {
-    const theme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    document.body.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-    document.querySelector('.theme-toggle i').className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
-    saveDB();
-}
-
-function updateCharCounter() {
-    const textarea = document.querySelector('.tweet-input');
-    const counter = document.getElementById('char-count');
-    counter.textContent = textarea.value.length;
-}
-
-// Inicialização
-function initApp() {
-    if (db.currentUser) {
-        document.getElementById('loginModal').style.display = 'none';
-        renderTweets();
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.body.setAttribute('data-theme', savedTheme);
+  votePoll(tweetId, optionIndex) {
+    const tweet = db.tweets.find(t => t.id === tweetId);
+    if (tweet?.poll && !this.hasVoted(tweetId)) {
+      tweet.poll.options[optionIndex].votes++;
+      tweet.poll.voters.push(db.currentUser.id);
+      saveDB();
+      renderTweets();
     }
-}
+  },
 
-// Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('.tweet-input').addEventListener('input', updateCharCounter);
-    initApp();
-    if (!db.currentUser) showLogin();
-});
+  hasVoted(tweetId) {
+    const tweet = db.tweets.find(t => t.id === tweetId);
+    return tweet?.poll?.voters?.includes(db.currentUser.id);
+  },
+
+  dispatchTweetEvent(tweet) {
+    const event = new CustomEvent('newtweet', {
+      detail: { tweet }
+    });
+    window.dispatchEvent(event);
+  }
+};
+
+// Sistema de Notificações Avançado
+const NotificationSystem = {
+  types: {
+    LIKE: 'like',
+    RETWEET: 'retweet',
+    REPLY: 'reply',
+    FOLLOW: 'follow',
+    MENTION: 'mention'
+  },
+
+  createNotification(type, data) {
+    return {
+      id: Date.now(),
+      type,
+      data,
+      read: false,
+      timestamp: new Date()
+    };
+  },
+
+  sendNotification(userId, notification) {
+    const user = db.users.find(u => u.id === userId);
+    if (user) {
+      user.notifications = user.notifications || [];
+      user.notifications.push(notification);
+      saveDB();
+      
+      if (userId === db.currentUser?.id) {
+        this.showDesktopNotification(notification);
+      }
+    }
+  },
+
+  showDesktopNotification(notification) {
+    if (Notification.permission === 'granted') {
+      new Notification('Novo no X', {
+        body: this.getNotificationText(notification),
+        icon: '/logo.png'
+      });
+    }
+  },
+
+  getNotificationText(notification) {
+    const user = db.users.find(u => u.id === notification.data.senderId);
+    switch(notification.type) {
+      case this.types.LIKE:
+        return `${user.name} curtiu seu tweet`;
+      case this.types.RETWEET:
+        return `${user.name} retweetou seu tweet`;
+      case this.types.REPLY:
+        return `${user.name} respondeu seu tweet`;
+      case this.types.FOLLOW:
+        return `${user.name} começou a seguir você`;
+      case this.types.MENTION:
+        return `${user.name} mencionou você em um tweet`;
+    }
+  }
+};
+
+// Sistema de Comunidades
+const CommunitySystem = {
+  createCommunity(name, description, rules) {
+    return {
+      id: Date.now(),
+      name,
+      description,
+      rules,
+      members: [db.currentUser.id],
+      admins: [db.currentUser.id],
+      created: new Date(),
+      banner: null,
+      icon: null
+    };
+  },
+
+  joinCommunity(communityId) {
+    const community = db.communities.find(c => c.id === communityId);
+    if (community && !community.members.includes(db.currentUser.id)) {
+      community.members.push(db.currentUser.id);
+      saveDB();
+    }
+  },
+
+  moderateContent(tweetId, action) {
+    if (this.isAdmin(db.currentUser.id)) {
+      const tweet = db.tweets.find(t => t.id === tweetId);
+      switch(action) {
+        case 'delete':
+          tweet.deleted = true;
+          break;
+        case 'hide':
+          tweet.hidden = true;
+          break;
+        case 'flag':
+          tweet.flagged = true;
+          break;
+      }
+      saveDB();
+    }
+  },
+
+  isAdmin(userId) {
+    return db.communities.some(c => c.admins.includes(userId));
+  }
+};
