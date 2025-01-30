@@ -1,33 +1,198 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>Simple RPG</title>
-    <link rel="stylesheet" href="rpg-style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clone Twitter/X</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Esquerda */
+        .left-sidebar {
+            width: 250px;
+            padding: 20px;
+            border-right: 1px solid #e1e8ed;
+        }
+
+        .logo {
+            font-size: 30px;
+            margin-bottom: 20px;
+            color: #1DA1F2;
+        }
+
+        .nav-item {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .nav-item:hover {
+            background-color: #e8f5fe;
+        }
+
+        .tweet-button {
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Conteúdo Principal */
+        .main-content {
+            flex: 1;
+            max-width: 600px;
+            border-right: 1px solid #e1e8ed;
+        }
+
+        .header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .tweet-compose {
+            padding: 20px;
+            border-bottom: 1px solid #e1e8ed;
+            display: flex;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ddd;
+        }
+
+        .tweet-input {
+            flex: 1;
+            border: none;
+            font-size: 20px;
+            resize: none;
+        }
+
+        .tweet-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        /* Sidebar Direita */
+        .right-sidebar {
+            width: 350px;
+            padding: 20px;
+        }
+
+        .search-bar {
+            padding: 10px 15px;
+            background-color: #eff3f4;
+            border-radius: 25px;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            border: none;
+            background: none;
+            margin-left: 10px;
+            width: 80%;
+        }
+
+        .trends {
+            background-color: #f7f9f9;
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .trend-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eff3f4;
+        }
+
+        @media (max-width: 1200px) {
+            .right-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .left-sidebar {
+                width: 80px;
+                align-items: center;
+            }
+            .nav-item span {
+                display: none;
+            }
+            .tweet-button {
+                padding: 15px;
+                border-radius: 50%;
+            }
+        }
+    </style>
 </head>
 <body>
-    
-    <!-- Tela de Login/Registro -->
-    <div id="authBox">
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="login()">Entrar</button>
-        <button onclick="register()">Criar Conta</button>
-    </div>
-
-    <!-- Tela de Status (inicialmente oculta) -->
-    <div id="statusBox" style="display: none;">
-        <h2>Seus Status</h2>
-        <p>Força: <span id="strengthValue">0</span></p>
-        <p>Agilidade: <span id="agilityValue">0</span></p>
-        <p>Pontos Disponíveis: <span id="pointsValue">0</span></p>
-
-        <div>
-            <button onclick="addStat('strength')">+ Força</button>
-            <button onclick="addStat('agility')">+ Agilidade</button>
+    <!-- Sidebar Esquerda -->
+    <div class="left-sidebar">
+        <div class="logo">X</div>
+        <div class="nav-item">
+            <span>🏠 Página Inicial</span>
         </div>
-        <button onclick="logout()">Sair</button>
+        <div class="nav-item">
+            <span>🔍 Explorar</span>
+        </div>
+        <div class="nav-item">
+            <span>🔔 Notificações</span>
+        </div>
+        <button class="tweet-button">Tweetar</button>
     </div>
 
-    <script src="rpg.js"></script>
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
+        <div class="header">
+            <h2>Página Inicial</h2>
+        </div>
+        <div class="tweet-compose">
+            <div class="avatar"></div>
+            <textarea class="tweet-input" placeholder="O que está acontecendo?"></textarea>
+            <div class="tweet-actions">
+                <div>📷🎥😊📍</div>
+                <button class="tweet-button" style="width: auto">Tweetar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Direita -->
+    <div class="right-sidebar">
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Pesquisar no X">
+        </div>
+        <div class="trends">
+            <h3>O que está acontecendo</h3>
+            <div class="trend-item">
+                <div>Assuntos do momento</div>
+                <div>#NovoLayout</div>
+                <div>2.456 Tweets</div>
+            </div>
+            <!-- Mais trend items -->
+        </div>
+    </div>
 </body>
 </html>
