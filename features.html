@@ -1,0 +1,39 @@
+<!-- Adicione dentro do body -->
+<div class="modal" id="mediaModal">
+  <div class="modal-content">
+    <div class="media-preview">
+      <img id="mediaPreview" alt="Pré-visualização de mídia">
+    </div>
+    <div class="media-edit-tools">
+      <button onclick="applyFilter('sepia')"><i class="fas fa-sun"></i></button>
+      <button onclick="applyFilter('grayscale')"><i class="fas fa-moon"></i></button>
+      <button onclick="cropMedia()"><i class="fas fa-crop"></i></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="spacesModal">
+  <div class="modal-content">
+    <div class="spaces-header">
+      <h2>Spaces ao Vivo</h2>
+      <button class="start-space"><i class="fas fa-broadcast-tower"></i> Iniciar Space</button>
+    </div>
+    <div class="spaces-list" id="spacesList"></div>
+  </div>
+</div>
+
+<template id="tweetTemplate">
+  <div class="tweet">
+    <div class="avatar"></div>
+    <div class="tweet-content">
+      <div class="tweet-header">
+        <span class="username"></span>
+        <span class="time"></span>
+      </div>
+      <p class="tweet-text"></p>
+      <div class="tweet-actions">
+        <!-- Ações do tweet -->
+      </div>
+    </div>
+  </div>
+</template>
