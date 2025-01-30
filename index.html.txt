@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple RPG</title>
+    <link rel="stylesheet" href="rpg-style.css">
+</head>
+<body>
+    
+    <!-- Tela de Login/Registro -->
+    <div id="authBox">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Entrar</button>
+        <button onclick="register()">Criar Conta</button>
+    </div>
+
+    <!-- Tela de Status (inicialmente oculta) -->
+    <div id="statusBox" style="display: none;">
+        <h2>Seus Status</h2>
+        <p>Força: <span id="strengthValue">0</span></p>
+        <p>Agilidade: <span id="agilityValue">0</span></p>
+        <p>Pontos Disponíveis: <span id="pointsValue">0</span></p>
+
+        <div>
+            <button onclick="addStat('strength')">+ Força</button>
+            <button onclick="addStat('agility')">+ Agilidade</button>
+        </div>
+        <button onclick="logout()">Sair</button>
+    </div>
+
+    <script src="rpg.js"></script>
+</body>
+</html>
